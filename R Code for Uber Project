@@ -1,0 +1,126 @@
+rm(list=ls())
+library(quantmod)
+library(ggplot2)
+
+## Uber's stock price performance
+uber <- getSymbols("UBER", src = "yahoo", from = "2019-05-10", to = "2021-10-25", auto.assign = FALSE)
+
+# We can find the daily return of Uber since IPO
+dailyReturn<-dailyReturn(uber)
+print(dailyReturn)
+
+# Plot the stock price performance of Uber
+ggplot(uber,aes(x = index(uber),y = uber$UBER.Close)) + 
+  geom_line(color = "darkblue") + 
+  ggtitle("Uber Performance") + 
+  xlab("Date") + ylab("Return") + 
+  theme(plot.title = element_text(hjust = 0.5))
+
+# We can check all the statistic summary for the Uber
+summary(uber)
+
+# Downlode the data of performance of Uber during COVID-19 
+uberCOVID <- getSymbols("UBER", src = "yahoo", from = "2019-10-10", to = "2020-10-25", auto.assign = FALSE)
+
+# Plot the performance of Uber during COVID-19
+ggplot(uberCOVID,aes(x = index(uberCOVID),y = uberCOVID$UBER.Close)) + 
+  geom_line(color = "darkblue") + 
+  ggtitle("UberCOVID Performance") + 
+  xlab("Date") + ylab("Return") + 
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Check the maximum price and minimum price of Uber during the period of COVID 
+max(uberCOVID$UBER.Close)
+min(uberCOVID$UBER.Close)
+
+# Data for Schwab S&P 500 Index Fund (SWPPX) 
+SWPPX <- getSymbols("SWPPX", src = "yahoo", from = "2019-05-10", to = "2021-10-25", auto.assign = FALSE)
+
+# Plot and joint the performance of Uber and SWPPX
+P = ggplot() + 
+  geom_line(data = uber, aes(x = index(uber), y = log(uber$UBER.Close), color = "ln_Uber")) +
+  geom_line(data = SWPPX, aes(x = index(SWPPX), y = log(SWPPX$SWPPX.Close), color = "ln_SWPPX")) +
+  ggtitle("SWPPX and Uber Performance") +
+  xlab('Dates') +
+  ylab('Price') +
+  theme(plot.title = element_text(hjust = 0.5))
+print(P)
+
+# Lyft's stock price performance and plot the performance
+lyft <- getSymbols("LYFT", src = "yahoo", from = "2019-05-10", to = "2021-10-25", auto.assign = FALSE)
+ggplot() + 
+  geom_line(data = uber, aes(x = index(uber), y = log(uber$UBER.Close), color = "Uber")) +
+  geom_line(data = lyft, aes(x = index(lyft), y = log(lyft$LYFT.Close), color = "Lyft")) +
+  ggtitle("lyft and Uber Performance") +
+  xlab('Dates') +
+  ylab('log_Price') +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Data and Plot for Vanguard S&P 500 ETF (VOO)
+voo <- getSymbols("VOO", src = "yahoo", from = "2019-05-10", to = "2021-10-25", auto.assign = FALSE)
+ggplot(voo,aes(x = index(voo),y = voo$VOO.Close)) + 
+  geom_line(color = "darkred") + 
+  ggtitle("VOO Performance") + 
+  xlab("Date") + ylab("Index") + 
+  theme(plot.title = element_text(hjust = 0.5))
+
+# the Plot for Uber Separate for three: High, low and Adjusted Close
+ggplot() + 
+  geom_line(data = uber, aes(x = index(uber), y = uber$UBER.High, color = "High")) +
+  geom_line(data = uber, aes(x = index(uber), y = uber$UBER.Low, color = "Low")) +
+  geom_line(data = uber, aes(x = index(uber), y = uber$UBER.Adjusted, color = "Adjusted Close")) +
+  ggtitle("Uber Performance") +
+  xlab('Dates') +
+  ylab('Price') +
+  theme(plot.title = element_text(hjust = 0.5))
+
+yearlyReturn(uber)
+
+# The quarterly return for Uber and plot combined with the mean value of quaterly return
+quarterlyReturn<-quarterlyReturn(uber)
+ggplot() + 
+  geom_line(data = quarterlyReturn, aes(x = index(quarterlyReturn), y = quarterlyReturn$quarterly.returns, color = "QuatReturn")) +
+  geom_line(data = quarterlyReturn, aes(x = index(quarterlyReturn), y = mean(quarterlyReturn), color = "Mean")) +
+  ggtitle("Uber's Quarter Return") +
+  xlab('Dates') +
+  ylab('Price') +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Check the maximum and minimum value of Uber's quarterly returen
+min(quarterlyReturn)
+max(quarterlyReturn)
+
+# The data of Nasdaq and Invesco QQQ Trust (QQQ)
+NASDAQ <- getSymbols("^IXIC", src = "yahoo", from = "2019-05-10", to = "2021-10-25", auto.assign = FALSE)
+QQQ <- getSymbols("QQQ", src = "yahoo", from = "2019-05-10", to = "2021-10-25", auto.assign = FALSE)
+
+# Combined the performance of Uber and Nasdaq
+ggplot() + 
+  geom_line(data = uber, aes(x = index(uber), y = log(uber$UBER.Close), color = "ln_Uber")) +
+  geom_line(data = NASDAQ, aes(x = index(NASDAQ), y = log(NASDAQ$IXIC.Close), color = "ln_Nasdaq")) +
+  ggtitle("NASDAQ and Uber Performance") +
+  xlab('Dates') +
+  ylab('Price') +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Combined the performance of Uber and QQQ; Used log for the data to make the better comparison
+ggplot() + 
+  geom_line(data = uber, aes(x = index(uber), y = log(uber$UBER.Close), color = "ln_Uber")) +
+  geom_line(data = QQQ, aes(x = index(QQQ), y = log(QQQ$QQQ.Close), color = "ln_QQQ")) +
+  ggtitle("QQQ and Uber Performance") +
+  xlab('Dates') +
+  ylab('Price') +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# The data of Russell 2000
+R2000 <- getSymbols("IWM", src = "yahoo", from = "2019-05-10", to = "2021-10-25", auto.assign = FALSE)
+
+# Combined the performance of Uber and Russell 2000; Used log for the data to make the better comparison
+
+ggplot() + 
+  geom_line(data = uber, aes(x = index(uber), y = log(uber$UBER.Close), color = "ln_Uber")) +
+  geom_line(data = R2000, aes(x = index(R2000), y = log(R2000$IWM.Close), color = "ln_Russell 2000")) +
+  ggtitle("Russell 2000 and Uber Performance") +
+  xlab('Dates') +
+  ylab('Price') +
+  theme(plot.title = element_text(hjust = 0.5))
